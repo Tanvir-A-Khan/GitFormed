@@ -1,14 +1,46 @@
+import { signOut } from 'firebase/auth';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../firebase';
 
 function NavScrollExample() {
+  const navigate = useNavigate();
+  console.log(localStorage.getItem('log'));
+
+
+
+  const handleLogout = ()=>{
+    signOut(auth)
+    .then(()=>{
+        console.log('signed out')
+      
+        localStorage.clear();
+        navigate('/')
+    }).catch((e)=>{
+        console.log(e)
+    })
+}
+  const handleSignup = (e)=>{
+    e.preventDefault();
+    navigate("/login")
+  }
+  const gotoHome = ()=>{
+    navigate("/")
+  }
+  const handleAddRepo = ()=>{
+    navigate("/createrepo")
+  }
+  const handleMyRepo = ()=>{
+    navigate("/createrepo")
+  }
   return (
-    <Navbar expand="lg" className="bg-body-tertiary">
+    <Navbar expand="lg" className="bg-body-tertiary ps-5 pe-5">
       <Container fluid>
-        <Navbar.Brand href="#">GitFormed</Navbar.Brand>
+        <Navbar.Brand >GitFormed</Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -16,7 +48,7 @@ function NavScrollExample() {
             style={{ maxHeight: '100px' }}
             navbarScroll
           >
-            <Nav.Link href="#action1">Home</Nav.Link>
+            <Nav.Link onClick={gotoHome}>Home</Nav.Link>
            
           </Nav>
           <Form className="d-flex">
@@ -28,8 +60,35 @@ function NavScrollExample() {
             />
             <Button variant="outline-success">Search</Button>
             {
-                 localStorage.getItem('user') &&
-                <Button className='bg-danger ms-2'>Logout</Button>
+                 localStorage.getItem('log') 
+                 ?
+                 <Button className='bg-primary  ms-2'onClick={handleAddRepo}>Add Repo</Button>
+                 :
+                 null
+            }
+            {
+                 localStorage.getItem('log') 
+                 ?
+                 <Button className='bg-primary  ms-2'onClick={handleMyRepo}>My Repos</Button>
+                 :
+                 null
+            }
+            {
+                 localStorage.getItem('log') 
+                 ?
+                 <Button className='bg-primary  ms-2'onClick={handleMyRepo}>Watch List</Button>
+                 :
+                 null
+            }
+            {
+                 localStorage.getItem('log') 
+                 ?
+             
+                 <Button className='bg-danger ms-2'onClick={handleLogout}>Logout</Button>
+                
+                 :
+                 <Button className='bg-primary ms-2' onClick={handleSignup}>Login</Button>
+               
             }
           </Form>
 

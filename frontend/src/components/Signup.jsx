@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Form, Button } from 'react-bootstrap';
 import { createUserWithEmailAndPassword } from 'firebase/auth'; // Assuming Firebase has been initialized
 import { auth } from '../firebase';
+import { Link } from 'react-router-dom';
 
 
 function Signup() {
@@ -27,7 +28,7 @@ function Signup() {
                 setUsername('');
                 setError(null);
 
-                
+
             })
             .catch((err) => {
                 setError(err.message); // Set the error message state if signup fails
@@ -35,7 +36,7 @@ function Signup() {
     };
 
     return (
-        <div className='m-5 p-5'>
+        <div className=' p-5 rounded w-50 m-auto'>
             <Form>
                 <h1>Register yourself</h1>
                 <Form.Group className="mb-3">
@@ -61,6 +62,7 @@ function Signup() {
                 <Button variant="primary" type="submit" onClick={handleSignup}>
                     Submit
                 </Button>
+                <p>Already have an account? <Link to='/login'>Login</Link></p>
             </Form>
         </div>
     );
