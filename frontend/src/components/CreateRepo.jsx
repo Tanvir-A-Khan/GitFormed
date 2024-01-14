@@ -1,12 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
 import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 import { useNavigate } from 'react-router-dom';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+
+
 
 const CreateRepo = () => {
   const navigate = useNavigate();
   const [repoTitle, setRepoTitle] = useState('');
   const [repoDescription, setRepoDescription] = useState('');
+  const [username, setUsername] = useState(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUsername(user.displayName || user.email);
+      } else {
+        setUsername(null);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const appSettings = {
     databaseURL: "https://gitformed-ab03a-default-rtdb.asia-southeast1.firebasedatabase.app/"
@@ -28,15 +48,17 @@ const CreateRepo = () => {
     if (repoTitle !== "" && repoDescription !== "") {
       const currentDate = new Date().toLocaleString();
       const ob = {
-        'user': 'user', // Replace with the actual username
-        'title': repoTitle,
-        'description': repoDescription,
-        'watchers': 0, // You may initialize this with the actual number of watchers
-        'creationDateTime': currentDate
+        user: username,
+        title: repoTitle,
+        description: repoDescription,
+        watchers: 0,
+        creationDateTime: currentDate
       };
 
+      // Firebase push function remains unchanged
       push(gitformedinDB, ob);
 
+      // Navigate to the home page after creating the repo
       navigate('/');
     }
   };

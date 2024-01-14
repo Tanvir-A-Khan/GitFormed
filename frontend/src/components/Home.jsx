@@ -5,6 +5,7 @@ import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.
 
 const Home = () => {
   const [instance, setInstance] = useState([]);
+  const [sortOption, setSortOption] = useState(null);
 
   useEffect(() => {
     const appSettings = {
@@ -17,13 +18,8 @@ const Home = () => {
 
     const fetchData = (snapshot) => {
       if (snapshot.exists()) {
-        const users = Object.entries(snapshot.val());
+        const users = Object.entries(snapshot.val() || {});
         setInstance(users);
-        users.forEach((item) => {
-          console.log(item[1].title);
-          console.log(item[1].user);
-          console.log(item[1].description);
-        });
       } else {
         console.log('No data in the database');
       }
@@ -33,24 +29,60 @@ const Home = () => {
       console.error("Error fetching data:", error);
     };
 
-    // Set up the listener when the component mounts
     const unsubscribe = onValue(gitformedinDB, fetchData, errorData);
 
-    // Clean up the listener when the component unmounts
     return () => unsubscribe();
-  }, []); // Empty dependency array ensures that this effect runs only once
+  }, []);
+
+  const handleWatchButtonClick = (index) => {
+    console.log(`Watch button clicked for item at index ${index}`);
+  };
+
+  const handleSortChange = (option) => {
+    setSortOption(option);
+  };
+
+  const sortInstance = () => {
+    if (sortOption === 'repoName') {
+      return instance.slice().sort((a, b) => a[1].title.localeCompare(b[1].title));
+    } else if (sortOption === 'date') {
+      return instance.slice().sort((a, b) => new Date(b[1].creationDateTime) - new Date(a[1].creationDateTime));
+    } else if (sortOption === 'watchers') {
+      return instance.slice().sort((a, b) => b[1].watchers - a[1].watchers);
+    } else {
+      return instance;
+    }
+  };
 
   return (
-    <div className=' p-5'>
+    <div className='p-5'>
       <h1 className='text-center'>Welcome to GitFormed</h1>
       <p className='text-center'>A powerful version controlling app</p>
 
-      {instance.map((obj, index) => (
+      <div className="mb-3">
+        <label htmlFor="sortOptions" className="form-label">Sort By:</label>
+        <select
+          id="sortOptions"
+          className="form-select"
+          value={sortOption}
+          onChange={(e) => handleSortChange(e.target.value)}
+        >
+          <option value="">Select Sorting Option</option>
+          <option value="repoName">Repository Name (Alphabetical Order)</option>
+          <option value="date">Date Wise</option>
+          <option value="watchers">Number of Watchers</option>
+        </select>
+      </div>
+
+      {sortInstance().slice(0, 10).map((obj, index) => (
         <div key={index} className='p-5'>
           <RepoCard
             userName={obj[1].user}
             repoName={obj[1].title}
             repoDescription={obj[1].description}
+            watchers={obj[1].watchers}
+            creationDateTime={obj[1].creationDateTime}
+            onButtonClick={() => handleWatchButtonClick(index)}
           />
         </div>
       ))}

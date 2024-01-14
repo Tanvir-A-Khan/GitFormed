@@ -62,21 +62,22 @@ function NavScrollExample() {
             {
                  localStorage.getItem('log') 
                  ?
-                 <Button className='bg-primary  ms-2'onClick={handleAddRepo}>Add Repo</Button>
+                 <Nav.Link className='p-2 w-50 ps-3' onClick={handleAddRepo}>Add Repo</Nav.Link>
                  :
                  null
             }
             {
                  localStorage.getItem('log') 
                  ?
-                 <Button className='bg-primary  ms-2'onClick={handleMyRepo}>My Repos</Button>
+                 <Nav.Link className='p-2 w-50' onClick={handleMyRepo}>My Repo</Nav.Link>
                  :
                  null
-            }
+                }
             {
-                 localStorage.getItem('log') 
-                 ?
-                 <Button className='bg-primary  ms-2'onClick={handleMyRepo}>Watch List</Button>
+              localStorage.getItem('log') 
+              ?
+              <Nav.Link className='p-2 w-50' onClick={handleMyRepo}>Watch List</Nav.Link>
+               
                  :
                  null
             }
